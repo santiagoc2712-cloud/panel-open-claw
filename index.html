@@ -69,3 +69,99 @@
     </div>
 
     <div style="margin-top:10px;">
+      </div>
+  <div class="board" id="board" aria-label="Tablero de tareas">
+    <div class="column" data-status="todo" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <h3>To Do</h3>
+    </div>
+    <div class="column" data-status="inprogress" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <h3>In Progress</h3>
+    </div>
+    <div class="column" data-status="done" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <h3>Done</h3>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = "openclaw_tasks_board";
+    let tasks = [];
+
+    function save() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function load() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            tasks = JSON.parse(raw);
+        }
+    }
+
+    function render() {
+        const columns = {
+            todo: document.querySelector('[data-status="todo"]'),
+            inprogress: document.querySelector('[data-status="inprogress"]'),
+            done: document.querySelector('[data-status="done"]')
+        };
+
+        Object.values(columns).forEach(col => {
+            const h3 = col.querySelector('h3');
+            col.innerHTML = '';
+            col.appendChild(h3);
+        });
+
+        tasks.forEach(tarea => {
+            const card = document.createElement('div');
+            card.className = 'task';
+            card.draggable = true;
+            card.innerHTML = `<h4>${tarea.title}</h4><small>${tarea.priority} - ${tarea.due || 'Sin fecha'}</small>`;
+            card.addEventListener('dragstart', () => card.classList.add('dragging'));
+            card.addEventListener('dragend', () => card.classList.remove('dragging'));
+            columns[tarea.status].appendChild(card);
+        });
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const priority = document.getElementById('priority').value;
+        const due = document.getElementById('due').value;
+
+        const nuevaTarea = {
+            id: Date.now(),
+            title,
+            description,
+            priority,
+            due,
+            status: 'todo'
+        };
+
+        tasks.unshift(nuevaTarea);
+        save();
+        render();
+        e.target.reset();
+    });
+
+    function allowDrop(e) { e.preventDefault(); }
+
+    function drop(e) {
+        e.preventDefault();
+        const dragging = document.querySelector('.dragging');
+        const status = e.currentTarget.getAttribute('data-status');
+        const title = dragging.querySelector('h4').innerText;
+        
+        const index = tasks.findIndex(t => t.title === title);
+        if (index > -1) {
+            tasks[index].status = status;
+            save();
+            render();
+        }
+    }
+
+    load();
+    render();
+</script>
+</body>
+</html>
+
