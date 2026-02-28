@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel de Tareas - OpenClaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f8; }
+    header { background: #1e3a8a; color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+    h1 { margin: 0; font-size: 1.2rem; }
+    .container { padding: 16px; max-width: 1200px; margin: auto; }
+    .card { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+    .column { min-height: 240px; padding: 6px; border-radius: 6px; background: #eef2ff; border: 1px dashed #c7d2fe; display: flex; flex-direction: column; }
+    .column h3 { font-size: 0.95rem; margin: 6px 4px 8px; color: #3730a3; }
+    .task { background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; margin: 6px 4px; cursor: grab; }
+    .task.dragging { opacity: 0.5; }
+    .task h4 { margin: 0 0 6px; font-size: 0.95rem; }
+    .task small { color: #555; display: block; margin-top: 4px; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    input, textarea, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
+    button { border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+    .btn { background: #374151; color: white; }
+    .btn.secondary { background: #64748b; color: white; }
+    .btn.success { background: #10b981; color: white; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .search { flex: 1; min-width: 240px; }
+    .export { margin-left: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <span style="font-size:1.2rem;font-weight:600;">OpenClaw - Panel de Tareas</span>
+    </div>
+    <div class="controls" aria-label="controles de vista">
+      <button class="btn" id="newTaskBtn">Nueva tarea</button>
+      <button class="btn secondary" id="exportBtn">Exportar JSON</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <form id="taskForm" class="row" autocomplete="off">
+        <div style="flex:2;">
+          <label>Título</label>
+          <input type="text" id="title" placeholder="Ej. Preparar informe semanal" required />
+        </div>
+        <div style="flex:3;">
+          <label>Descripción</label>
+          <textarea id="description" rows="2" placeholder="Notas sobre la tarea..."></textarea>
+        </div>
+        <div style="width:180px;">
+          <label>Prioridad</label>
+          <select id="priority">
+            <option value="Baja">Baja</option>
+            <option value="Media" selected>Media</option>
+            <option value="Alta">Alta</option>
+          </select>
+        </div>
+        <div style="width:180px;">
+          <label>Fecha límite</label>
+          <input type="date" id="due" />
+        </div>
+        <div style="display:flex;align-items:end;">
+          <button type="submit" class="btn">Agregar</button>
+        </div>
+      </form>
+    </div>
+
+    <div style="margin-top:10px;">
